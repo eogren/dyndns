@@ -1,0 +1,15 @@
+name: Test-And-Build
+
+on: push
+
+jobs:
+  test-and-build:
+    name: Test and build the code
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo test --release
+      - run: cargo build --release
