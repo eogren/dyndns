@@ -7,3 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+error-chain = "0.12.4"
+futures-util = "0.3"
+reqwest = "0.10"
+tokio = { version = "0.2", features = ["full"] }
+
+[dev-dependencies]
+httptest = "0.13"
