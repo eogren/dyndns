@@ -31,10 +31,17 @@ pub async fn get_public_ip_address_with_override(host: &str) -> Result<PublicAdd
 }
 
 async fn internal_get_address(host: &str) -> Result<PublicAddress> {
-    let resp = reqwest::get(host).await?;
+    let client = reqwest::Client::new();
+
+    let resp = client
+        .get(host)
+        .header("Accept", "text/plain")
+        .send()
+        .await?;
     match resp.error_for_status() {
         Ok(res) => {
-            let text = res.text().await?;
+            let mut text = res.text().await?;
+            text.retain(|c| !c.is_whitespace());
             match text.parse::<Ipv4Addr>() {
                 Ok(_) => Ok(PublicAddress::IP4Address(text)),
                 Err(e) => Err(format!(
@@ -60,7 +67,7 @@ mod tests {
         let server = Server::run();
         server.expect(
             Expectation::matching(request::method_path("GET", "/"))
-                .respond_with(status_code(200).body("1.2.3.4")),
+                .respond_with(status_code(200).body("1.2.3.4\n")),
         );
 
         assert_eq!(
